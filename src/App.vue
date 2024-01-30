@@ -39,7 +39,27 @@ const reset = () => {
   emoteRate.value = 15
   discountRate.value = 5
   discountThreshold.value = 3
+  discountInterval.value = 3
+  maxDiscount.value = 50
 }
+
+const export_json = () => {
+  const data = {
+    emoteRate: emoteRate.value,
+    discountRate: discountRate.value,
+    discountThreshold: discountThreshold.value,
+    discountInterval: discountInterval.value,
+    maxDiscount: maxDiscount.value
+  }
+
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }))
+  a.setAttribute('download', 'rates.json')
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+}
+
 </script>
 
 <template>
@@ -58,8 +78,10 @@ const reset = () => {
         <span class="text-2xl font-semibold text-dark-100">${{ calculate() }}</span>
       </div>
       <!-- discount info -->
-      <span class="text-dark-300 ml-2" v-if="packages.some(pkg => pkg.emotes === emotes)">No discount applied for pre-defined packages</span>
-      <span class="text-dark-300 ml-2" v-else-if="discount > 0">original price: ${{ emotes * emoteRate }}, discount: {{ discount }}%</span>
+      <span class="text-dark-300 ml-2" v-if="packages.some(pkg => pkg.emotes === emotes)">No discount applied for
+        pre-defined packages</span>
+      <span class="text-dark-300 ml-2" v-else-if="discount > 0">original price: ${{ emotes * emoteRate }}, discount: {{
+        discount }}%</span>
       <span class="text-dark-300 ml-2" v-else>No discount applied</span>
     </div>
 
@@ -76,19 +98,24 @@ const reset = () => {
 
         <!-- discount rate -->
         <div class="flex flex-col mb-4">
-          <label class="mb-2 cursor-help" title="The percentage of discount you offer for every 3 emotes after the threshold">Discount Rate</label>
-          <input type="number" min="0" max="100" class="p-2 rounded-md bg-dark-800 text-dark-100" v-model="discountRate" />
+          <label class="mb-2 cursor-help"
+            title="The percentage of discount you offer for every 3 emotes after the threshold">Discount Rate</label>
+          <input type="number" min="0" max="100" class="p-2 rounded-md bg-dark-800 text-dark-100"
+            v-model="discountRate" />
         </div>
 
         <!-- discount threshold -->
         <div class="flex flex-col mb-4">
-          <label class="mb-2 cursor-help" title="The number of emotes required to be eligible for a discount">Discount Threshold</label>
+          <label class="mb-2 cursor-help" title="The number of emotes required to be eligible for a discount">Discount
+            Threshold</label>
           <input type="number" min="0" class="p-2 rounded-md bg-dark-800 text-dark-100" v-model="discountThreshold" />
         </div>
 
         <!-- discount interval -->
         <div class="flex flex-col mb-4">
-          <label class="mb-2 cursor-help" title="Every {{ discountInterval }} emotes after the threshold, you get an additional {{ discountRate }}% discount">Discount Interval</label>
+          <label class="mb-2 cursor-help"
+            title="Every {{ discountInterval }} emotes after the threshold, you get an additional {{ discountRate }}% discount">Discount
+            Interval</label>
           <input type="number" min="0" class="p-2 rounded-md bg-dark-800 text-dark-100" v-model="discountInterval" />
         </div>
 
@@ -98,8 +125,11 @@ const reset = () => {
           <input type="number" min="0" max="100" class="p-2 rounded-md bg-dark-800 text-dark-100" v-model="maxDiscount" />
         </div>
 
-        <!-- reset -->
-        <button class="p-2 bg-dark-700 rounded-md text-dark-100" @click="reset">Reset</button>
+        <!-- export and reset buttons -->
+        <div class="flex justify-between">
+          <button class="p-2 bg-dark-700 text-dark-100 rounded-md" @click="export_json">Export</button>
+          <button class="p-2 bg-dark-700 text-dark-100 rounded-md" @click="reset">Reset</button>
+        </div>
       </div>
     </div>
   </main>
